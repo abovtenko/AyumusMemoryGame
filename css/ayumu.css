@@ -1,0 +1,59 @@
+.Board {
+    background-color: black;
+}
+.Square {
+    width: 100px;
+    height: 100px;
+    padding: 0px;
+    margin: 0px;
+    border: 1px solid black;
+    display: inline-block;
+    margin: 8px;
+    box-sizing: border-box;
+    background-color: inherit;
+    vertical-align: top;
+    font-size: 30px;
+}
+.TaskBar {
+    padding: 20px;
+}
+.number-hidden {
+    background-color: white !important;
+}
+.number-shown {
+    color: white;
+}
+#btn-start {
+    height: 70px;
+    width: 70px;
+    padding: 15px;
+    background-color: black;
+    border: 4px solid white;
+    border-radius: 50%;
+    display: inline-block;
+    color: white;
+}
+.row-start {
+    height: 90px;
+}
+.TaskBar {
+    background-color: #d5be3f;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.TaskBar select {
+    margin-top: 20px;
+}
+.TaskBar .settings {
+    background-color: #660f0f;
+    padding-bottom: 20px;
+}
+.settings-title {
+    font-weight: bold;
+    font-size: 20px;
+}
+#game-header {
+    padding: 25px;
+    font-size: 35px;
+    background-color: #d5be3f;
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <link rel="stylesheet" type="text/css" href="css/ayumu.css" />
+        <link rel="stylesheet" type="text/css"  href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" />
+        
+        <script type="text/babel">
+
+            window.onload = function() {
+                'use strict';                
+                
+                class Board extends React.Component {
+                    
+                    constructor(props) {
+                        super(props)                        
+                        this.state = {
+                            nextNumber : 1,
+                            numberPositions : new Array(40).fill(0),
+                            isGameStarted : false,
+                            totalSquares : 9,
+                            displayTime : 500
+                        }
+                    }
+                    
+                    setGame() {    
+                        this.setState({
+                            totalSquares : parseInt(document.getElementById('nSquares').value) || 9,
+                            displayTime : parseInt(document.getElementById('show-time').value) || 500
+                        })
+                        
+                        var count = 0;
+                        
+                        while(count < this.state.totalSquares) {
+                            var n = Math.floor(Math.random() * Math.floor(40))
+                            if(this.state.numberPositions[n] === 0 ) {
+                                count++;
+                                this.state.numberPositions[n] = count;                                
+                            }
+                        }
+                    }
+                    
+                    clearGame() {
+                        [].slice.call(document.getElementsByClassName('Square'))
+                            .forEach((s) => { s.className = "Square" });
+                        
+                        this.setState({
+                            nextNumber : 1,
+                            numberPositions : new Array(40).fill(0),
+                            isGameStarted : false,
+                            totalSquares : this.state.totalSquares,
+                            displayTime : this.state.displayTime
+                        })
+                        document.getElementById('btn-start').style.display = 'inline-block'
+                    }
+                    
+                    applyGameSettings = () => {
+                        this.setState({
+                            totalSquares : parseInt(document.getElementById('nSquares').value) || 9,
+                            displayTime : parseInt(document.getElementById('show-time').value) || 500
+                        });
+                    }
+                    
+                    startGame = () => {
+                        document.getElementById('btn-start').style.display = 'none';
+                        if(this.state.isGameStarted) this.clearGame();
+                        
+                        var count = 0;
+
+                        while(count < this.state.totalSquares) {
+                            var n = Math.floor(Math.random() * Math.floor(40))
+                            if(this.state.numberPositions[n] === 0 ) {
+                                count++;
+                                this.state.numberPositions[n] = count;                                
+                            }
+                        }
+                        this.setState(this.state);
+
+                        setTimeout(() => {
+                            this.state.numberPositions
+                                .map((x, index) => {
+                                    if(x > 0) document.getElementById(index).className += ' number-hidden';
+                                });
+                            this.setState({ isGameStarted : true })
+                        }, this.state.displayTime)
+                        
+                    }
+                    
+                    handleClick = (key) => {
+                        if(this.state.isGameStarted & this.state.numberPositions[key] > 0)
+                        switch(true) {
+                            case (this.state.nextNumber === this.state.totalSquares):
+                                this.clearGame()
+                                alert('WIN!')
+                                break;
+                            case (this.state.numberPositions[key] !== this.state.nextNumber):
+                                alert('LOSE!')
+                                this.clearGame()
+                                break;
+                            default:
+                                var square = document.getElementById(key)
+                                square.innerHTML = "";
+                                square.className = "Square"
+                                this.state.nextNumber++
+                                break;
+                        }                        
+                    }
+                    
+                    render() {
+                        return(
+                            <div>
+                            <div className="Board container">
+                                <div>
+                                {
+                                   this.state.numberPositions
+                                        .map((x, index) => {
+                                            var square = <Square 
+                                                       key={index} 
+                                                       id={index}
+                                                       value={x}
+                                                       onClick={ () => { this.handleClick(index) } }
+                                                       />   
+                                            if(index % 8 === 0)
+                                                return [<div key={index+100} className="w-100"></div>, square]
+                                            else
+                                                return square
+                                        })  
+                                }
+                                </div>
+                                <div className="row row-start">
+                                    <div className="col-md-3">
+                                        <button id="btn-start" onClick={ this.startGame}>Start</button>
+                                    </div>
+                                </div>                                
+                            </div>    
+                            <TaskBar onChangeSetting={ () => { this.applyGameSettings() } }/>
+                            </div>
+                        )
+                    }
+                }
+                
+                function Square(props) {
+                    return (
+                        <button 
+                            className={(props.value > 0) ? 'Square number-shown' : 'Square'} 
+                            onClick={props.onClick}
+                            id={props.id}>
+                                {(props.value > 0) ? props.value : ''}
+                        </button>
+                    )
+                }
+
+                function TaskBar(props) {
+                    return (
+                        <div className="TaskBar container">
+                            <div className="settings-title">Settings</div>
+                            <div className="row settings">
+                                <div className="col-md-3">
+                                    <select 
+                                        id="show-time" 
+                                        className="form-control" 
+                                        onChange={ props.onChangeSetting }>
+                                        <option value="3000">Select time..</option>
+                                        <option value="1000">1</option>
+                                        <option value="2000">2</option>
+                                        <option value="3000">3</option>
+                                        <option value="4000">4</option>
+                                        <option value="5000">5</option>
+                                        <option value="6000">6</option>
+                                        <option value="7000">7</option>
+                                        <option value="8000">8</option>
+                                        <option value="9000">9</option>
+                                        <option value="10000">10</option>
+                                    </select>
+                                    <select 
+                                        id="nSquares" 
+                                        className="form-control" 
+                                        onChange={ props.onChangeSetting }>
+                                        <option value="9">Select square count..</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+
+                function Game(props) {
+                    return (
+                        <div id="Game">
+                            <div id="game-header">Ayumu's Game</div>
+                            <Board />
+                        </div>
+                    );
+                }
+                
+                ReactDOM.render(
+                    <Game />,
+                    document.getElementById('root')
+                )
+            }
+        </script>
+    </head>
+    <body>
+        <div id='root'></div>
+    </body>
+</html>
